@@ -147,8 +147,6 @@ body{
   min-width:0;
   display:flex;
   flex-direction:column;
-  height:100vh;
-  overflow:hidden;
 }
 #topbar{
   padding:18px 32px 14px;
@@ -202,8 +200,6 @@ select.chip-select{ appearance:none; padding-right:26px; background-image:url("d
 #stats-strip .amber{color:var(--amber-400);}
 
 #question-scroll{
-  flex:1;
-  overflow-y:auto;
   padding:22px 32px 60px;
 }
 .empty-state{
@@ -546,7 +542,7 @@ function renderTopicList(){
       searchTerm = '';
       document.getElementById('search').value = '';
       renderAll();
-      document.getElementById('question-scroll').scrollTop = 0;
+      window.scrollTo(0,0);
       document.getElementById('sidebar').classList.remove('open');
     });
     topicListEl.appendChild(btn);
@@ -747,12 +743,12 @@ function renderQuestions(){
 }
 
 function renderAll(keepScroll){
-  const scrollPos = keepScroll ? document.getElementById('question-scroll').scrollTop : 0;
+  const scrollPos = keepScroll ? window.scrollY : 0;
   renderTopicList();
   renderTopbar();
   renderQuestions();
   renderFooter();
-  if(keepScroll) document.getElementById('question-scroll').scrollTop = scrollPos;
+  if(keepScroll) window.scrollTo(0, scrollPos);
 }
 
 // ---------- Controls ----------
@@ -794,12 +790,11 @@ document.getElementById('menu-btn').addEventListener('click', ()=>{
   document.getElementById('sidebar').classList.toggle('open');
 });
 
-const scrollEl = document.getElementById('question-scroll');
-scrollEl.addEventListener('scroll', ()=>{
-  document.getElementById('jump-top').classList.toggle('show', scrollEl.scrollTop > 500);
+window.addEventListener('scroll', ()=>{
+  document.getElementById('jump-top').classList.toggle('show', window.scrollY > 500);
 });
 document.getElementById('jump-top').addEventListener('click', ()=>{
-  scrollEl.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top:0, behavior:'smooth'});
 });
 
 renderAll();
