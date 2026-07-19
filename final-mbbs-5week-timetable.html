@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final MBBS — 5 Week Interleaved Timetable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#161c26; --paper:#f5f2ea; --paper-2:#eae5d8; --navy:#0b1f3a;
+    --teal:#1b7a72; --amber:#c8862c; --line:#d8d1bf;
+    --med:#1b6ea8; --sur:#a83232; --gyn:#8a4ba8; --paed:#1b7a72; --psy:#c8862c; --mix:#5b5f6b;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans', sans-serif;-webkit-font-smoothing:antialiased;}
+  header{background:var(--navy);color:var(--paper);padding:26px 20px 16px;position:sticky;top:0;z-index:20;border-bottom:3px solid var(--amber);}
+  header .eyebrow{font-family:'IBM Plex Mono', monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+  header h1{font-family:'Fraunces', serif;font-weight:600;font-size:24px;margin:0 0 4px;letter-spacing:-.01em;}
+  header .sub{font-family:'IBM Plex Mono', monospace;font-size:11.5px;color:#c8cfdb;line-height:1.5;}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .legend span{font-family:'IBM Plex Mono', monospace;font-size:10px;padding:3px 8px;border-radius:3px;color:var(--paper);letter-spacing:.02em;}
+  .note{background:#22315499;border:1px solid #3a4a6e;border-radius:6px;padding:8px 10px;margin-top:12px;font-size:11.5px;color:#dbe1ee;font-family:'IBM Plex Mono',monospace;line-height:1.55;}
+  .weektabs{display:flex;overflow-x:auto;background:var(--paper-2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:19;}
+  .weektabs button{flex:1 0 auto;min-width:110px;padding:12px 10px;background:none;border:none;border-bottom:3px solid transparent;font-family:'IBM Plex Mono', monospace;font-size:12px;letter-spacing:.03em;color:var(--ink);cursor:pointer;opacity:.55;}
+  .weektabs button.active{opacity:1;border-bottom-color:var(--amber);color:var(--navy);font-weight:600;}
+  .weeklabel{padding:16px 20px 4px;}
+  .weeklabel h2{font-family:'Fraunces', serif;font-size:19px;margin:0 0 2px;color:var(--navy);}
+  .weeklabel p{margin:0;font-size:12.5px;color:#555;}
+  .daytabs{display:flex;overflow-x:auto;gap:6px;padding:10px 20px 4px;}
+  .daytabs button{flex:0 0 auto;padding:8px 13px;border-radius:20px;border:1px solid var(--line);background:var(--paper);font-family:'IBM Plex Mono', monospace;font-size:11px;cursor:pointer;color:#444;}
+  .daytabs button.active{background:var(--navy);color:var(--paper);border-color:var(--navy);}
+  .daycard{margin:14px 20px 40px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fffdf8;}
+  .daycard .dayhead{padding:12px 16px;background:var(--paper-2);border-bottom:1px solid var(--line);}
+  .daycard .dayhead .row1{display:flex;justify-content:space-between;align-items:baseline;}
+  .daycard .dayhead h3{margin:0;font-family:'Fraunces', serif;font-size:16px;color:var(--navy);}
+  .daycard .dayhead .clock{font-family:'IBM Plex Mono', monospace;font-size:11px;color:#777;}
+  .daycard .dayhead .subjrow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .subjchip{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:3px 9px;border-radius:4px;color:#fff;}
+  .subjchip small{opacity:.85;}
+  .block{display:flex;padding:10px 16px;border-bottom:1px solid #efeadb;gap:12px;align-items:flex-start;}
+  .block:last-child{border-bottom:none;}
+  .block.disc{background:#fbf6ec;}
+  .block .time{font-family:'IBM Plex Mono', monospace;font-size:11.5px;color:#666;flex:0 0 104px;padding-top:2px;}
+  .block .barwrap{flex:0 0 4px;align-self:stretch;border-radius:2px;}
+  .block.disc .barwrap{background-image:repeating-linear-gradient(45deg,transparent,transparent 3px,#00000022 3px,#00000022 6px);}
+  .block .content{flex:1;}
+  .block .tags{display:flex;gap:6px;margin-bottom:3px;}
+  .tag{font-family:'IBM Plex Mono', monospace;font-size:9.5px;letter-spacing:.04em;padding:1px 6px;border-radius:3px;color:#fff;text-transform:uppercase;}
+  .tag.disc-tag{background:#3a2f1a;}
+  .topic{font-size:13.5px;font-weight:500;line-height:1.4;}
+  .break-row{padding:6px 16px;font-family:'IBM Plex Mono', monospace;font-size:10.5px;color:#9a9282;background:#f0ece0;border-bottom:1px solid #efeadb;}
+  footer{padding:20px;font-family:'IBM Plex Mono', monospace;font-size:11px;color:#8a8272;text-align:center;}
+  .med{background:var(--med);} .sur{background:var(--sur);} .gyn{background:var(--gyn);}
+  .paed{background:var(--paed);} .psy{background:var(--psy);} .mix{background:var(--mix);}
+  @media (max-width:480px){.block{flex-wrap:wrap;} .block .time{flex:0 0 100%;font-weight:600;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Final MBBS — Exam Preparation</div>
+  <h1>5-Week Interleaved Timetable</h1>
+  <div class="sub">Med · Sur · Gyn/Obs · Paed · Psyc — starts Mon 20 Jul 2026 · ends Sun 23 Aug · daily 08:00–00:00</div>
+  <div class="legend">
+    <span class="med">Medicine</span><span class="sur">Surgery</span><span class="gyn">Gyn / Obs</span>
+    <span class="paed">Paediatrics</span><span class="psy">Psychiatry</span><span class="mix">Recall</span>
+  </div>
+  <div class="note">Papers are the real most-recent 8 sittings held for all five subjects: 2026 Mar, 2025 Sept, 2025 Mar, 2024 Nov, 2024 Jun, 2024 Jan, 2023 Jul, 2023 Feb (6 Qs each, timed). Two subjects a day keep all five warm. Each subject also gets theory, categorized MCQ and a 2h peer discussion; on paper days that discussion goes through the sitting together. The drive has more if you want to extend — Gyn/Obs runs back to 2014, Med/Sur/Paed to 2020, Psych has a bundled 2018–2022 set. Surgery's chapter list may be cropped at the top; check the book.</div>
+</header>
+
+<div class="weektabs" id="weektabs"></div>
+<div class="weeklabel" id="weeklabel"></div>
+<div class="daytabs" id="daytabs"></div>
+<div id="daycard"></div>
+
+<footer>Adjust freely — this is a scaffold, not a cage. Protect sleep even on the hard weeks.</footer>
+
+<script>
+const CH = {
+  med: {main:["CNS Disorders","CVS Disorders","Respiratory Disorders","Hepatobiliary Disorders","Toxicology","Renal Disorders","Endocrinology","Haematology","Rheumatology + Geriatrics","Zoonotic & Infectious + Snakebites","Dermatology","GI Disorders","Genetics","STD","Statistics"], misc:["Miscellaneous"]},
+  sur: {main:["Vascular & Lymphatic","Transplant","Upper GIT","Lower GIT","Pancreas","Hepatobiliary","Emergencies","Endocrine (Thyroid + Adrenal)","ENT","Ophthalmology","Neurosurgery","Orthopaedics","Paediatric Surgery","Urosurgery","Trauma","Anaesthesia","Breast Disorders","Hernia","Burns","Soft Tissue / Other"], misc:[]},
+  gyn: {main:["Amenorrhea (1° & 2°)","Abnormal Uterine Bleeding","Miscarriage & Ectopic","Cervical Ca & CIN","Ovarian Tumours","Endometriosis & Adenomyosis","Endometrial Ca & GTD","Gynae Infections","Urogynaecology","Menopause & HRT","Subfertility","Contraceptives","Gynae Surgery","Anatomy & Physiology of Pregnancy","Normal & Abnormal Labour","Preterm Labour, PROM","Malpresentations & Malpositions","Twin Pregnancy","Antepartum Haemorrhage","Shoulder Dystocia / Inversion / Cord Prolapse","Postpartum Haemorrhage","Hyperemesis Gravidarum","Diabetes in Pregnancy","Hypertensive Disorders","Other Disorders in Pregnancy","Infections in Pregnancy","Antenatal Screening","IUGR","IU Death of Foetus","Rh Isoimmunization","Puerperium & Neonatology","Community Obstetrics"], misc:["Gynae & Obs Miscellaneous"]},
+  paed: {main:["Neonatology","Growth","Nutrition","Skeletal Disorders","CVS Disorders","CNS Disorders","Endocrine Disorders","Renal Disorders","Haematological Disorders","Oncology","GIT Disorders","Respiratory Disorders","Paediatric Emergencies","Genetics","Dermatology","Psycho-social","Other"], misc:["Miscellaneous"]},
+  psy: {main:["History & MSE (Psychopathology)","Dementia & Neuropsychiatric","Delirium","Schizophrenia","Delusional Disorder","Bipolar Affective Disorder","Depression","Postpartum Psychiatry","Suicide & Deliberate Self Harm","Reactions to Stressful Experiences","Anxiety Disorders","OCD","Personality Disorders","Misuse of Alcohol & Drugs","Somatoform & Dissociative","Child Psychiatry","Psychiatry of the Elderly","Mental Retardation","Eating & Sleep Disorders","Human Sexuality","Drugs & Physical/Psychological Rx","Forensic Psychiatry"], misc:["Miscellaneous"]}
+};
+const NAMES = {med:"Medicine",sur:"Surgery",gyn:"Gyn/Obs",paed:"Paediatrics",psy:"Psychiatry"};
+const order = ["med","sur","gyn","paed","psy"];
+const K = {med:3,sur:4,gyn:7,paed:4,psy:5};
+// sessionNum -> real SEQ sitting (most recent 8, held for all subjects). Study on 0,2,4,7,10 ; wrap-up on 13
+const PAPER_SITTING = {1:"2026 Mar",3:"2025 Sept",5:"2025 Mar",6:"2024 Nov",8:"2024 Jun",9:"2024 Jan",11:"2023 Jul",12:"2023 Feb"};
+
+function chapSlice(subj, session, count){
+  const C = CH[subj].main, L = C.length, k = K[subj];
+  const start = (session*k) % L, out=[];
+  for(let i=0;i<count;i++) out.push(C[(start+i)%L]);
+  return out;
+}
+
+function sessionContent(subj, session){
+  if(PAPER_SITTING[session]) return {type:'seq', sitting:PAPER_SITTING[session]};
+  if(session===13) return {type:'wrap', chapters:(CH[subj].misc||[]).concat(chapSlice(subj,session,2))};
+  return {type:'study', chapters:chapSlice(subj,session,K[subj])};
+}
+
+function paperSittingFor(session){ return PAPER_SITTING[session] || null; }
+
+function activities(subj, c){
+  const nm = NAMES[subj];
+  if(c.type==='seq') return {long:true,
+    paper:`SEQ ${c.sitting} — 6 questions, timed exam conditions`,
+    review:{tag:'Review', label:'Self-mark, rewrite weakest answers, log errors'},
+    discussion:{label:`Discuss the ${c.sitting} paper with peers — compare answers, agree model answers, note what the mark scheme rewards`}};
+  if(c.type==='wrap'){ const chap=c.chapters.join(", ");
+    return {long:false,
+      work1:{tag:'Redo', label:'Redo your weakest sitting — full written answers'},
+      work2:{tag:'Mixed MCQ', label:'Mixed MCQ across all chapters + '+chap},
+      discussion:{label:'Viva-style group quizzing + walk through your worst paper — '+chap}};
+  }
+  const chap = c.chapters.join(", ");
+  return {long:false,
+    work1:{tag:'Theory', label:'Theory — '+chap},
+    work2:{tag:'MCQ', label:'Categorized MCQ (timed) — '+chap},
+    discussion:{label:'Discuss / teach-back — '+chap+': build SEQ-style answers together, clear up confusions'}};
+}
+
+function morningBlock(subj, c){
+  const A = activities(subj, c);
+  if(A.long) return [
+    {time:'08:00–11:00',cls:subj,tag:'SEQ Paper',topic:A.paper},
+    {brk:'11:00–11:15  Break'},
+    {time:'11:15–12:15',cls:subj,tag:A.review.tag,topic:A.review.label},
+    {brk:'12:15–13:00  Lunch'},
+    {time:'13:00–15:00',cls:subj,tag:'Discussion',topic:A.discussion.label,disc:true}
+  ];
+  return [
+    {time:'08:00–10:00',cls:subj,tag:A.work1.tag,topic:A.work1.label},
+    {brk:'10:00–10:15  Break'},
+    {time:'10:15–12:15',cls:subj,tag:A.work2.tag,topic:A.work2.label},
+    {brk:'12:15–13:00  Lunch'},
+    {time:'13:00–15:00',cls:subj,tag:'Discussion',topic:A.discussion.label,disc:true}
+  ];
+}
+
+function eveningBlock(subj, c){
+  const A = activities(subj, c);
+  if(A.long) return [
+    {brk:'15:00–15:30  Break / switch subject'},
+    {time:'15:30–18:30',cls:subj,tag:'SEQ Paper',topic:A.paper},
+    {brk:'18:30–19:30  Dinner'},
+    {time:'19:30–20:30',cls:subj,tag:A.review.tag,topic:A.review.label},
+    {brk:'20:30–20:45  Break'},
+    {time:'20:45–22:45',cls:subj,tag:'Discussion',topic:A.discussion.label,disc:true}
+  ];
+  return [
+    {brk:'15:00–15:30  Break / switch subject'},
+    {time:'15:30–17:30',cls:subj,tag:A.work1.tag,topic:A.work1.label},
+    {brk:'17:30–18:30  Dinner'},
+    {time:'18:30–20:30',cls:subj,tag:A.work2.tag,topic:A.work2.label},
+    {brk:'20:30–20:45  Break'},
+    {time:'20:45–22:45',cls:subj,tag:'Discussion',topic:A.discussion.label,disc:true}
+  ];
+}
+
+function dayData(week, day){
+  const d = week*7 + day;
+  const gM = d*2, gE = d*2+1;
+  const mSubj = order[gM%5], mSession = Math.floor(gM/5);
+  const eSubj = order[gE%5], eSession = Math.floor(gE/5);
+  const blocks = morningBlock(mSubj, sessionContent(mSubj,mSession))
+    .concat(eveningBlock(eSubj, sessionContent(eSubj,eSession)))
+    .concat([{time:'22:45–00:00',cls:'mix',tag:'Interleave',
+      topic:`Cross-subject recall — flashcards on BOTH ${NAMES[mSubj]} & ${NAMES[eSubj]} + one weak topic from an earlier day`}]);
+  return {mSubj,eSubj,mSession,eSession,blocks};
+}
+
+const START = new Date(2026, 6, 20); // Monday 20 July 2026
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dateFor(week, day){ const d=new Date(START); d.setDate(START.getDate()+week*7+day); return d; }
+function fmtLong(d){ return `${WD[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`; }
+let curWeek = 0, curDay = 0;
+
+function chipLabel(prefix, subj, session){
+  const sit = paperSittingFor(session);
+  const extra = sit ? `SEQ ${sit}` : `s${session+1}/14`;
+  return `${prefix} · ${NAMES[subj]} <small>(${extra})</small>`;
+}
+
+function render(){
+  document.getElementById('weektabs').innerHTML = [0,1,2,3,4].map(i=>`<button class="${i===curWeek?'active':''}" onclick="setWeek(${i})">Week ${i+1}</button>`).join('');
+  const wA = dateFor(curWeek,0), wB = dateFor(curWeek,6);
+  const range = `${WD[wA.getDay()]} ${wA.getDate()} ${MON[wA.getMonth()]} – ${WD[wB.getDay()]} ${wB.getDate()} ${MON[wB.getMonth()]}`;
+  document.getElementById('weeklabel').innerHTML = `<h2>Week ${curWeek+1} · ${range}</h2><p>Interleaved rotation — 2 subjects a day, each with a 2h discussion. Real SEQ sittings named in each paper slot.</p>`;
+  document.getElementById('daytabs').innerHTML = [0,1,2,3,4,5,6].map(i=>{const dt=dateFor(curWeek,i);return `<button class="${i===curDay?'active':''}" onclick="setDay(${i})">${WD[dt.getDay()]} ${dt.getDate()}</button>`;}).join('');
+
+  const D = dayData(curWeek, curDay);
+  const rows = D.blocks.map(p=>{
+    if(p.brk) return `<div class="break-row">${p.brk}</div>`;
+    const isDisc = !!p.disc;
+    return `<div class="block${isDisc?' disc':''}">
+      <div class="time">${p.time}</div>
+      <div class="barwrap ${p.cls}"></div>
+      <div class="content">
+        <div class="tags"><span class="tag ${isDisc?'disc-tag':p.cls}">${p.tag}</span></div>
+        <div class="topic">${p.topic}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('daycard').innerHTML = `<div class="daycard">
+    <div class="dayhead">
+      <div class="row1"><h3>${fmtLong(dateFor(curWeek,curDay))}</h3><span class="clock">08:00 – 00:00</span></div>
+      <div class="subjrow">
+        <span class="subjchip ${D.mSubj}">${chipLabel('AM', D.mSubj, D.mSession)}</span>
+        <span class="subjchip ${D.eSubj}">${chipLabel('PM', D.eSubj, D.eSession)}</span>
+      </div>
+    </div>
+    ${rows}
+  </div>`;
+}
+function setWeek(i){ curWeek=i; curDay=0; render(); }
+function setDay(i){ curDay=i; render(); }
+render();
+</script>
+</body>
+</html>
